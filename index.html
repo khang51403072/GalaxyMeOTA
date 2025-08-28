@@ -1,9 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cài đặt GalaxyMe</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đang cài đặt GalaxyMe...</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; text-align: center; }
+        .container { padding: 2rem; background-color: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        p { color: #666; }
+    </style>
 </head>
 <body>
-  <a href="itms-services://?action=download-manifest&url=https://galaxyme-worker.khang51403072.workers.dev/manifest.plist">Cài đặt ứng dụng</a>
+    <div class="container">
+        <h1 id="status-title">Đang chuẩn bị cài đặt...</h1>
+        <p id="status-message">Vui lòng chờ trong giây lát.</p>
+    </div>
+
+    <script>
+        // --- CẤU HÌNH ---
+        const workerUrl = 'https://galaxyme-worker.khang51403072.workers.dev';
+        const iosInstallUrl = `itms-services://?action=download-manifest&url=${workerUrl}/install/ios/latest`;
+        const androidInstallUrl = `${workerUrl}/install/android/latest`;
+        // ---------------
+
+        function detectOSAndRedirect() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            const statusTitle = document.getElementById('status-title');
+            const statusMessage = document.getElementById('status-message');
+
+            // Phát hiện iOS (iPhone, iPad, iPod)
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                statusTitle.innerText = 'Đang chuyển hướng đến cài đặt iOS...';
+                statusMessage.innerText = 'Nếu không có gì xảy ra, vui lòng đảm bảo bạn đang dùng Safari.';
+                window.location.href = iosInstallUrl;
+                return;
+            }
+
+            // Phát hiện Android
+            if (/android/i.test(userAgent)) {
+                statusTitle.innerText = 'Đang tải về file cài đặt Android...';
+                statusMessage.innerText = 'File APK sẽ tự động được tải về.';
+                window.location.href = androidInstallUrl;
+                return;
+            }
+
+            // Trường hợp còn lại (Desktop, etc.)
+            statusTitle.innerText = 'Hệ điều hành không được hỗ trợ';
+            statusMessage.innerHTML = 'Vui lòng mở link này trên điện thoại <strong>iPhone</strong> hoặc <strong>Android</strong> để cài đặt ứng dụng.';
+        }
+
+        // Chạy ngay khi trang được tải
+        window.onload = detectOSAndRedirect;
+    </script>
 </body>
 </html>
